@@ -20,7 +20,7 @@ export const userReqSchema = userSchema.pick({
   admin: true,
 });
 
-export const loginSchema = userReqSchema.omit({admin: true})
+export const loginSchema = userReqSchema.omit({admin: true, name: true, phone_number: true})
 
 export const userResSchema = userSchema.partial({password: true})
 

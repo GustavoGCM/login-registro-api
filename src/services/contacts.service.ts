@@ -3,6 +3,17 @@ import { AppDataSource } from "../data-source";
 import Contact from "../entities/contacts.entity";
 import User from "../entities/users.entity";
 
+export const getContactsService = async (
+  userId: number
+) => {
+  const contacts = AppDataSource.createQueryBuilder()
+    .relation(User, "contacts")
+    .of(userId).loadMany();
+  console.log(contacts);
+  
+  return contacts;
+};
+
 export const createContactService = async (
   contact: Contact,
   userId: string
@@ -15,11 +26,11 @@ export const createContactService = async (
     .insert()
     .values(contact)
     .execute();
-  
-    const userRepository: Repository<User> =
-    AppDataSource.getRepository(User);
-    const user: User | null = await userRepository.findOne({where: {id: +userId}})  
-  
+
+  const userRepository: Repository<User> = AppDataSource.getRepository(User);
+  const user: User | null = await userRepository.findOne({
+    where: { id: +userId },
+  });
 
   const insertedContact: Contact | null = await contactRepository
     .createQueryBuilder("contact")
@@ -27,7 +38,7 @@ export const createContactService = async (
     .where("contact.id = :id", { id: newContact.identifiers[0].id })
     .getOne();
 
-    await AppDataSource.createQueryBuilder()
+  await AppDataSource.createQueryBuilder()
     .relation(User, "contacts")
     .of(user)
     .add(insertedContact);
